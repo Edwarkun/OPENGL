@@ -102,6 +102,10 @@ int main() {
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
 
+		/////////////////// UNIFORM VARIABLES ////////////////////
+		GLint offset = glGetUniformLocation(shader.Program, "offset"); // We save the direction of the variable offset to a pointer
+		glUniform1f(offset, abs(sin(glfwGetTime()) * 0.2f));
+
 		//pitar el VAO
 		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
