@@ -30,7 +30,7 @@ int main() {
 
 	/////////////////// WINDOW CREATION ////////////////////
 	//create a window
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Hola mundo", nullptr, nullptr);
+	window = glfwCreateWindow(WIDTH, HEIGHT, "OPENGL_FRAMEWORK", nullptr, nullptr);
 
 	if (!window) {
 		std::cout << "Error al cargar la ventana" << std::endl;
@@ -49,7 +49,7 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 	/////////////////// SHADER LOADING ////////////////////
-	GLuint programID = LoadShaders("./src/SimpleVertexShader.vertexshader", "./src/SimpleFragmentShader.fragmentshader");
+	Shader shader("./src/SimpleVertexShader.vertexshader", "./src/SimpleFragmentShader.fragmentshader");
 
 	//Vertices Definition
 	//Here we initialize the points that will form our shape
@@ -100,7 +100,7 @@ int main() {
 		glClearColor(0.0f, 0.2f, 0.0f, 1.0f);
 
 		/////////////////// SHADER USAGE ////////////////////
-		glUseProgram(programID);
+		shader.USE();
 
 		//pitar el VAO
 		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO

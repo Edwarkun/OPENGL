@@ -1,7 +1,16 @@
 #pragma once
-#ifndef SHADER_HPP
-#define SHADER_HPP
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
-GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
+#include <GL\glew.h>
+#include <GLFW\glfw3.h>
 
-#endif
+
+class Shader {
+public:
+	GLuint Program;
+	Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+	void USE();
+};
