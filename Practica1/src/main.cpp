@@ -4,11 +4,12 @@
 //GLFW
 #include <GLFW\glfw3.h>
 #include <iostream>
-#include <shader.hpp>
+//Shader
+#include "shader.h"
 
 using namespace std;
 const GLint WIDTH = 800, HEIGHT = 600;
-bool WIDEFRAME = false;
+bool WIREFRAME = false;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
@@ -48,37 +49,51 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 	/////////////////// SHADER LOADING ////////////////////
-	//cargamos los shader
 	GLuint programID = LoadShaders("./src/SimpleVertexShader.vertexshader", "./src/SimpleFragmentShader.fragmentshader");
 
-	// Definir el buffer de vertices
+	//Vertices Definition
+	//Here we initialize the points that will form our shape
+	float vertices []{
+		-0.2f, -0.2f, 0.f,
+		0.2f, -0.2f, 0.f,
+		0.2f, 0.2f, 0.f,
+		-0.2f, 0.2f, 0.f
+	};
+	//EBO definition
+	//Here we define which point form a triangle
+	int triangles[]{
+		0, 1, 3,
+		1, 2, 3
+	};
 
-	// Definir el EBO
+	// VBO, VAO and EBO creation
+	GLuint VBO; //pointer to the VBO --- VBO = Vertex Buffer Object
+	GLuint EBO; //pointer to the EBO --- EBO = Element Buffer Object
+	GLuint VAO; //pointer to the VAO --- VAO = Vertice Array Object
 
-	// Crear los VBO, VAO y EBO
-	
+	/////////////////// VBO SETUP ////////////////////
+	glGenBuffers(1, &VBO); // We generate a buffer to store the VBO
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); //We bind the VBO to it's buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //We allocate enough memory to hold all our vertices
+	//We now have the VBO allocated in memory, binded with it's buffer and filled with the necessary information
 
-	//reservar memoria para el VAO, VBO y EBO
+	/////////////////// EBO SETUP ////////////////////
+	glGenBuffers(1, &EBO); // We generate a buffer to store the EBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); //We bind the VBO to it's buffer, in this case an element array one
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(triangles), triangles, GL_STATIC_DRAW); //We allocate enough memory to hold all the elements that we will draw
 
+	/////////////////// VAO SETUP ////////////////////
+	glGenVertexArrays(1, &VAO);//We create a vertex array buffer that will store the VAO properties
+	glBindVertexArray(VAO); // We bind that VAO to our pointer
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), (GLvoid*)0);//Here we store enough memory for a vao taht will work with 3 dimensional vertices
 
-	//Establecer el objeto
-		//Declarar el VBO y el EBO
+	//We reset the bindings
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		//Enlazar el buffer con openGL
-
-		//Establecer las propiedades de los vertices
-
-		//liberar el buffer
-	
-	//liberar el buffer de vertices
-
-
-	//bucle de dibujado
-
+	//DRAW LOOP
 	while (!glfwWindowShouldClose(window)) {
-
-		/////////////////// INPUT PROCESSING ////////////////////
-		glfwPollEvents();
 
 		/////////////////// CLEAR THE COLOR BUFFER AND SET BACKGROUND COLOR ////////////////////
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -88,28 +103,46 @@ int main() {
 		glUseProgram(programID);
 
 		//pitar el VAO
+		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-		//pintar con lineas
-		//pintar con triangulos
+		if (!WIREFRAME) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POLYGON);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+		else {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
 
-		// Swap the screen buffers
+		glBindVertexArray(0);
 
+		/////////////////// SWAP SCREEN BUFFERS /////////////////////
 		glfwSwapBuffers(window);
+
+		/////////////////// INPUT PROCESSING ////////////////////
+		glfwPollEvents();
 
 	}
 
-	// liberar la memoria de los VAO, EBO y VBO
+	// Free the VAO, VBO and EBO
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 
 	// Terminate GLFW, clearing any resources allocated by GLFW.
-
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-	//TODO, comprobar que la tecla pulsada es escape para cerrar la aplicación y la tecla w para cambiar a modo widwframe
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_KEY_DOWN) {
-		glfwWindowShouldClose(window);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+
+	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+		WIREFRAME = !WIREFRAME;
 	}
 }

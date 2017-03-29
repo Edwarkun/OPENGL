@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common\shader.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Common\shader.hpp" />
+    <ClInclude Include="src\shader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3FC640D2-EFA2-403C-A406-DF29A85CFD5D}</ProjectGuid>
