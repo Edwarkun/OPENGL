@@ -4,21 +4,21 @@
 layout(location = 0) in vec3 vertexPosition_modelspace;
 
 
-out vec3 newVertices;
+out vec3 vertices;
 
 uniform float offset;
 
 void main(){
 	
-	newVertices = vertexPosition_modelspace;
+	vertices = vertexPosition_modelspace;
 
     gl_Position.xyz = vertexPosition_modelspace;
     gl_Position.w = 1.0;
 	if(vertexPosition_modelspace.x < 0 && vertexPosition_modelspace.y < 0){
-		newVertices.x = -0.2 - offset;
+		vertices.x = -0.5 - offset;
 	} else if (vertexPosition_modelspace.x > 0 && vertexPosition_modelspace.y < 0){
-		newVertices.x = 0.2 + offset;
+		vertices.x = 0.5 + offset;
 	}
-	gl_Position.xyz = newVertices;
+	gl_Position.xyz = vertices;
 }
 
