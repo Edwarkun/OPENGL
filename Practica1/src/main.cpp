@@ -7,8 +7,14 @@
 #include <SOIL.h>
 //Shader
 #include "shader.h"
+//Matrix and vectors
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+
 
 using namespace std;
+using namespace glm;
 const GLint WIDTH = 800, HEIGHT = 600;
 bool WIREFRAME = false;
 
@@ -114,6 +120,16 @@ int main() {
 	int T2W, T2H; // We will store the texture width and height in those variables
 	LoadTexture(T2, T2W, T2H, "./src/planetTexture.png");
 
+	/////////////////// TRANSFORMATION MATRIX ////////////////////
+	vec3 positionVec(0.5f, 0.5f, 0.f);
+	vec3 scaleVec(0.5f, -0.5f, 1.0f);
+	vec3 rotationVec(0.0f, 0.0f, 1.0f);
+
+	mat4x4 transformationMatrix;
+	// Translate -> Rotate -> Scale
+	transformationMatrix = glm::translate(transformationMatrix, positionVec);
+	transformationMatrix = glm::rotate(transformationMatrix, 0.0f, rotationVec);
+	transformationMatrix = glm::scale(transformationMatrix, scaleVec);
 
 	//DRAW LOOP
 	while (!glfwWindowShouldClose(window)) {
@@ -130,6 +146,9 @@ int main() {
 		glUniform1f(offset, abs(sin(glfwGetTime()) * 0.2f));*/
 		GLint texClamp = glGetUniformLocation(shader.Program, "textureClamp");
 		glUniform1f(texClamp, (sin(glfwGetTime()) + 1) / 2);
+
+		///////////////////  TRANSFORMATION MATRIX ////////////////////
+		glUniformMatrix4fv(shader.Program, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
 
 		/////////////////// BIND VAO AND EVO ////////////////////
 		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO

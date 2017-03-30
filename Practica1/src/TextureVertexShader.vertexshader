@@ -10,6 +10,9 @@ out vec3 vertices;
 out vec2 TexCoord;
 
 uniform float offset;
+//Tranformation matrix
+
+uniform mat4 matrix;
 
 void main(){	
 
