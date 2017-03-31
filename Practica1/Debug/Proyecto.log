@@ -1,0 +1,4 @@
+﻿  main.cpp
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(148): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+  Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.exe
+  Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.pdb (Full PDB)
