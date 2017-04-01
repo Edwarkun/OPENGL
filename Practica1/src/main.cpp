@@ -12,6 +12,7 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
+#define PI 3.1416f
 
 using namespace std;
 using namespace glm;
@@ -121,15 +122,19 @@ int main() {
 	LoadTexture(T2, T2W, T2H, "./src/planetTexture.png");
 
 	/////////////////// TRANSFORMATION MATRIX ////////////////////
-	vec3 positionVec(0.5f, 0.5f, 0.f);
-	vec3 scaleVec(0.5f, -0.5f, 1.0f);
-	vec3 rotationVec(0.0f, 0.0f, 1.0f);
+	vec3 positionVec(0.5f, 0.5f, 0.f); // New position
+	vec3 scaleVec(0.5f, -0.5f, 1.0f); // New scale
+	vec3 rotationVec(0.0f, 0.0f, 1.0f); // plane used to rotate the figure
+	float rotation = 0.0f;
 
-	mat4x4 transformationMatrix;
-	// Translate -> Rotate -> Scale
+	mat4 transformationMatrix(1.0f);
+	//Translate -> Rotate -> Scale
 	transformationMatrix = glm::translate(transformationMatrix, positionVec);
-	transformationMatrix = glm::rotate(transformationMatrix, 0.0f, rotationVec);
+	transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
 	transformationMatrix = glm::scale(transformationMatrix, scaleVec);
+	
+	//Now we get the transformation matrix handle from the vertex shader
+	GLuint matrixID = glGetUniformLocation(shader.Program, "matrix");
 
 	//DRAW LOOP
 	while (!glfwWindowShouldClose(window)) {
@@ -148,7 +153,14 @@ int main() {
 		glUniform1f(texClamp, (sin(glfwGetTime()) + 1) / 2);
 
 		///////////////////  TRANSFORMATION MATRIX ////////////////////
-		glUniformMatrix4fv(shader.Program, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+		//We recalculate the movement with the new values
+		transformationMatrix = glm::mat4(1.0f);
+		transformationMatrix = glm::translate(transformationMatrix, positionVec);
+		transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
+		transformationMatrix = glm::scale(transformationMatrix, scaleVec);
+		//We comunicate with glsl to overwrite the matrix it has
+		glUniformMatrix4fv(matrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+		rotation = (sin(glfwGetTime()) * 2 * PI);
 
 		/////////////////// BIND VAO AND EVO ////////////////////
 		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO

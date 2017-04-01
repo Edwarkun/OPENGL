@@ -15,11 +15,10 @@ uniform float offset;
 uniform mat4 matrix;
 
 void main(){	
-    gl_Position.xyz = vertexPosition_modelspace;
-    gl_Position.w = 1.0;
-	
-	//Set the out variables
+	//Use the transformation matrix here
+    gl_Position = matrix * vec4(vertexPosition_modelspace, 1);
 
+	//Set the out variables
 	vertices = vertexPosition_modelspace;
 	TexCoord = textureNormals_modelspace;
 }
