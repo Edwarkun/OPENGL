@@ -27,4 +27,8 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\MatrixFragmentShader3D.fragmentshader" />
+    <None Include="src\MatrixVertexShader3D.vertexshader" />
+  </ItemGroup>
 </Project>

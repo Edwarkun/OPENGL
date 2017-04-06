@@ -57,8 +57,12 @@ int main() {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+
+	/////////////////// KEY CALLBACK //////////////////////
+	glfwSetKeyCallback(window, key_callback);
+
 	/////////////////// SHADER LOADING ////////////////////
-	Shader shader("./src/TextureVertexShader.vertexshader", "./src/TextureFragmentShader.fragmentshader");
+	Shader shader("./src/MatrixVertexShader3D.vertexshader", "./src/MatrixFragmentShader3D.fragmentshader");
 
 	//Vertices Definition
 	//Here we initialize the points that will form our shape
@@ -121,10 +125,10 @@ int main() {
 	int T2W, T2H; // We will store the texture width and height in those variables
 	LoadTexture(T2, T2W, T2H, "./src/planetTexture.png");
 
-	/////////////////// TRANSFORMATION MATRIX ////////////////////
-	vec3 positionVec(0.5f, 0.5f, 0.f); // New position
+	/////////////////// TRANSFORMATION / MODEL  MATRIX ////////////////////
+	vec3 positionVec(0.f, -0.5f, 0.f); // New position
 	vec3 scaleVec(0.5f, -0.5f, 1.0f); // New scale
-	vec3 rotationVec(0.0f, 0.0f, 1.0f); // plane used to rotate the figure
+	vec3 rotationVec(1.0f, 0.0f, 0.0f); // plane used to rotate the figure
 	float rotation = 0.0f;
 
 	mat4 transformationMatrix(1.0f);
@@ -132,9 +136,23 @@ int main() {
 	transformationMatrix = glm::translate(transformationMatrix, positionVec);
 	transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
 	transformationMatrix = glm::scale(transformationMatrix, scaleVec);
+
+	/////////////////// VIEW MATRIX ////////////////////
+	//The "look at" matrix used for the camera
+	//Camera variables
+	glm::vec3 cameraPosition(0.f, 0.f,-3.f);
+	glm::vec3 center(0.f, 0.f, 0.f);
+	glm::vec3 upWorld(0.f, 1.f, 0.f);
+	//Actual look at matrix
+	glm::mat4 viewMat = glm::lookAt(cameraPosition, center, upWorld);
 	
+	/////////////////// GET THE UNIFORM VARIABLES ////////////////////
 	//Now we get the transformation matrix handle from the vertex shader
-	GLuint matrixID = glGetUniformLocation(shader.Program, "matrix");
+	//GLint offset = glGetUniformLocation(shader.Program, "offset"); // We save the direction of the variable offset to a pointer
+	//GLuint matrixID = glGetUniformLocation(shader.Program, "matrix");
+	GLuint projMatrixID = glGetUniformLocation(shader.Program, "projectionMat"); // Perspective / Ortho camera
+	GLuint viewMatrixID = glGetUniformLocation(shader.Program, "viewMat"); // The "camera" matrix
+	GLuint modelMatrixID = glGetUniformLocation(shader.Program, "modelMat"); // IMPORTANT -> model = transformation
 
 	//DRAW LOOP
 	while (!glfwWindowShouldClose(window)) {
@@ -146,8 +164,17 @@ int main() {
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
 
+		/////////////////// PROJECTION MARIX (CAMERA) ////////////////////
+		//Orthografic Camera ("cubic" frustrum)
+		//glm::mat4 orthoProj = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+
+		//Prespective Camera (FOV)
+		float AspectRatio = WIDTH / HEIGHT;
+		float FOV = 60.f;
+		glm::mat4 perspProj = glm::perspective(radians(FOV), AspectRatio, 0.1f, 100.f);
+
 		/////////////////// UNIFORM VARIABLES TWEAKING ////////////////////
-		/*GLint offset = glGetUniformLocation(shader.Program, "offset"); // We save the direction of the variable offset to a pointer
+		/*
 		glUniform1f(offset, abs(sin(glfwGetTime()) * 0.2f));*/
 		GLint texClamp = glGetUniformLocation(shader.Program, "textureClamp");
 		glUniform1f(texClamp, (sin(glfwGetTime()) + 1) / 2);
@@ -159,7 +186,9 @@ int main() {
 		transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
 		transformationMatrix = glm::scale(transformationMatrix, scaleVec);
 		//We comunicate with glsl to overwrite the matrix it has
-		glUniformMatrix4fv(matrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+		glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
+		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(viewMat));
+		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
 		rotation = (sin(glfwGetTime()) * 2 * PI);
 
 		/////////////////// BIND VAO AND EVO ////////////////////
@@ -179,7 +208,7 @@ int main() {
 
 		/////////////////// WIREFRAME / FILL & PAINT ////////////////////
 		if (!WIREFRAME) {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_POLYGON);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 		else {
@@ -211,18 +240,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		WIREFRAME = !WIREFRAME;
+		WIREFRAME = !WIREFRAME;	
 	}
 }
 void LoadTexture(GLuint& pointer, int& width, int& height, const std::string& path) {
 	glGenTextures(1, &pointer); // We generate the actual texture
 	glBindTexture(GL_TEXTURE_2D, pointer); // WE bind it to the graphics card
-										   // Set the texture wrapping/filtering
+	// Set the texture wrapping/filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Load and generate the texture
+	//Load and generate the texture
 	unsigned char* myTexture = SOIL_load_image(path.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, myTexture); // We generate the texture
 	SOIL_free_image_data(myTexture); // We free the image since we have stored it

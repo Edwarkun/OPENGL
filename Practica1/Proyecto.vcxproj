@@ -25,6 +25,10 @@
   <ItemGroup>
     <ClInclude Include="src\shader.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\MatrixFragmentShader3D.fragmentshader" />
+    <None Include="src\MatrixVertexShader3D.vertexshader" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3FC640D2-EFA2-403C-A406-DF29A85CFD5D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
