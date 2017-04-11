@@ -63,7 +63,63 @@ int main() {
 
 	/////////////////// SHADER LOADING ////////////////////
 	Shader shader("./src/MatrixVertexShader3D.vertexshader", "./src/MatrixFragmentShader3D.fragmentshader");
+	//3D cubes info
+	GLfloat VertexBufferCube[] = {
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		0.5f , -0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f , -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f ,  0.5f,  0.5f,  1.0f, 1.0f,
+		0.5f ,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f , -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f , -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f , -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f , -0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f , -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f , -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	};
+
+	vec3 CubesPositionBuffer[] = {
+		vec3(0.0f ,  0.0f,  0.0f),
+		vec3(2.0f ,  5.0f, -15.0f),
+		vec3(-1.5f, -2.2f, -2.5f),
+		vec3(-3.8f, -2.0f, -12.3f),
+		vec3(2.4f , -0.4f, -3.5f),
+		vec3(-1.7f,  3.0f, -7.5f),
+		vec3(1.3f , -2.0f, -2.5f),
+		vec3(1.5f ,  2.0f, -2.5f),
+		vec3(1.5f ,  0.2f, -1.5f),
+		vec3(-1.3f,  1.0f, -1.5f)
+	};
 	//Vertices Definition
 	//Here we initialize the points that will form our shape
 	GLfloat vertices[] = {
@@ -85,6 +141,25 @@ int main() {
 	GLuint EBO; //pointer to the EBO --- EBO = Element Buffer Object
 	GLuint VAO; //pointer to the VAO --- VAO = Vertice Array Object
 
+				/////////////////// NEW SETUP (3D) ////////////////////
+
+	/////////////////// VBO SETUP ////////////////////
+	glGenBuffers(1, &VBO); // We generate a buffer to store the VBO
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); //We bind the VBO to it's buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexBufferCube), VertexBufferCube, GL_STATIC_DRAW);
+
+	/////////////////// VAO SETUP ////////////////////	
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO); 
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * sizeof(float), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * sizeof(float), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+				/////////////////// OLD SETUP (2D) ////////////////////
+	/*
 	/////////////////// VBO SETUP ////////////////////
 	glGenBuffers(1, &VBO); // We generate a buffer to store the VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); //We bind the VBO to it's buffer
@@ -100,7 +175,7 @@ int main() {
 	glGenVertexArrays(1, &VAO);//We create a vertex array buffer that will store the VAO properties
 	glBindVertexArray(VAO); // We bind that VAO to our pointer
 	
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * sizeof(float), (GLvoid*)0);//Here we store enough memory for a vao taht will work with 3 dimensional vertices
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * sizeof(float), (GLvoid*)0);//Here we store enough memory for a vao that will work with 3 dimensional vertices
 	glEnableVertexAttribArray(0);//We bind that layout to the shader
 	
 	glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * sizeof(float), (GLvoid*)(3 * sizeof(GLfloat)));//Storage for the color coordinates
@@ -108,6 +183,7 @@ int main() {
 	
 	glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * sizeof(float), (GLvoid*)(6 * sizeof(GLfloat)));//Storage for the texture normals
 	glEnableVertexAttribArray(2);//We bind that layout to the shader
+	*/
 
 	/////////////////// BINDINGS RESET ////////////////////
 	
@@ -127,7 +203,7 @@ int main() {
 
 	/////////////////// TRANSFORMATION / MODEL  MATRIX ////////////////////
 	vec3 positionVec(0.f, -0.5f, 0.f); // New position
-	vec3 scaleVec(0.5f, -0.5f, 1.0f); // New scale
+	vec3 scaleVec(1.f, 1.f, 1.0f); // New scale
 	vec3 rotationVec(1.0f, 0.0f, 0.0f); // plane used to rotate the figure
 	float rotation = 0.0f;
 
@@ -140,7 +216,7 @@ int main() {
 	/////////////////// VIEW MATRIX ////////////////////
 	//The "look at" matrix used for the camera
 	//Camera variables
-	glm::vec3 cameraPosition(0.f, 0.f,-3.f);
+	glm::vec3 cameraPosition(0.f, 0.f,-30.f);
 	glm::vec3 center(0.f, 0.f, 0.f);
 	glm::vec3 upWorld(0.f, 1.f, 0.f);
 	//Actual look at matrix
@@ -158,20 +234,15 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 
 		/////////////////// CLEAR THE COLOR BUFFER AND SET BACKGROUND COLOR ////////////////////
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		glClearColor(0.0f, 0.2f, 0.0f, 1.0f);
+		glEnable(GL_DEPTH_TEST);
 
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
 
-		/////////////////// PROJECTION MARIX (CAMERA) ////////////////////
-		//Orthografic Camera ("cubic" frustrum)
-		//glm::mat4 orthoProj = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 
-		//Prespective Camera (FOV)
-		float AspectRatio = WIDTH / HEIGHT;
-		float FOV = 60.f;
-		glm::mat4 perspProj = glm::perspective(radians(FOV), AspectRatio, 0.1f, 100.f);
 
 		/////////////////// UNIFORM VARIABLES TWEAKING ////////////////////
 		/*
@@ -179,21 +250,11 @@ int main() {
 		GLint texClamp = glGetUniformLocation(shader.Program, "textureClamp");
 		glUniform1f(texClamp, (sin(glfwGetTime()) + 1) / 2);
 
-		///////////////////  TRANSFORMATION MATRIX ////////////////////
-		//We recalculate the movement with the new values
-		transformationMatrix = glm::mat4(1.0f);
-		transformationMatrix = glm::translate(transformationMatrix, positionVec);
-		transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
-		transformationMatrix = glm::scale(transformationMatrix, scaleVec);
-		//We comunicate with glsl to overwrite the matrix it has
-		glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
-		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(viewMat));
-		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
-		rotation = (sin(glfwGetTime()) * 2 * PI);
+
 
 		/////////////////// BIND VAO AND EVO ////////////////////
 		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // WE define the EBO we're using
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // WE define the EBO we're using
 
 		/////////////////// TEXTURE USAGE ////////////////////
 		//We bind the first texture to the uniform variable "Texture1" in the fragment shader
@@ -205,17 +266,46 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, T2);
 		glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);
+		for (int i = 0; i < 10; i++) {
+			/////////////////// PROJECTION MARIX (CAMERA) ////////////////////
+			//Orthografic Camera ("cubic" frustrum)
+			//glm::mat4 orthoProj = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 
-		/////////////////// WIREFRAME / FILL & PAINT ////////////////////
-		if (!WIREFRAME) {
+			//Prespective Camera (FOV)
+			float AspectRatio = WIDTH / HEIGHT;
+			float FOV = 60.f;
+			glm::mat4 perspProj = glm::perspective(radians(FOV), AspectRatio, 0.1f, 100.f);
+
+			///////////////////  TRANSFORMATION MATRIX ////////////////////
+			//We recalculate the movement with the new values
+			transformationMatrix = glm::mat4(1.0f);
+			rotationVec = glm::vec3(0.0f, 1.0f, 0.0f);
+			transformationMatrix = glm::rotate(transformationMatrix, (float)glfwGetTime() * 2, rotationVec);
+			transformationMatrix = glm::translate(transformationMatrix, CubesPositionBuffer[i]);
+			rotationVec = glm::vec3(1.0f, 0.0f, 0.0f);
+			transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
+			transformationMatrix = glm::scale(transformationMatrix, scaleVec);
+			//We comunicate with glsl to overwrite the matrix it has
+			glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
+			glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(viewMat));
+			glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+			rotation = (sin(glfwGetTime()) * 2 * PI);
+
+			/////////////////// WIREFRAME / FILL & PAINT //////////////////// 
+			/*
+			if (!WIREFRAME) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			}
+			else {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			}
+			glBindVertexArray(0); // Reset VAO
+			*/
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-		else {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		}
-		glBindVertexArray(0); // Reset VAO
 		/////////////////// INPUT PROCESSING ////////////////////
 		glfwPollEvents();
 		/////////////////// SWAP SCREEN BUFFERS /////////////////////
@@ -256,4 +346,12 @@ void LoadTexture(GLuint& pointer, int& width, int& height, const std::string& pa
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, myTexture); // We generate the texture
 	SOIL_free_image_data(myTexture); // We free the image since we have stored it
 	glBindTexture(GL_TEXTURE_2D, 0); // We bind the texture to the graphics card
+}
+void CreateModelMatrix(glm::vec3 position, glm::vec3 rotationAxis, float rotation, glm::vec3 scale) {
+	//We recalculate the movement with the new values
+	glm::mat4 transformationMatrix;
+	transformationMatrix = glm::mat4(1.0f);
+	transformationMatrix = glm::translate(transformationMatrix, position);
+	transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationAxis);
+	transformationMatrix = glm::scale(transformationMatrix, scale);
 }
