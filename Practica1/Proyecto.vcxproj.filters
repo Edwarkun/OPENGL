@@ -21,9 +21,15 @@
     <ClCompile Include="src\shader.cpp">
       <Filter>Archivos de recursos</Filter>
     </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\shader.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

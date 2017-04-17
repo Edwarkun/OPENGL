@@ -7,6 +7,7 @@
 #include <SOIL.h>
 //Shader
 #include "shader.h"
+#include "Camera.h"
 //Matrix and vectors
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -18,9 +19,25 @@ using namespace std;
 using namespace glm;
 const GLint WIDTH = 800, HEIGHT = 600;
 bool WIREFRAME = false;
+float deltaTime = 0.f;
+
+Camera cam(vec3(0.f, 0.f, -3.f), vec3(0.f, 0.f, 0.f), 10.f, 60.f);
+
+float lastMouseX;
+float lastMouseY;
+bool frameOne = true;
+
+glm::vec3 cameraPosition;
+glm::vec3 cameraFront;
+glm::vec3 cameraRight;
+glm::vec3 cameraUp;
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void LoadTexture(GLuint&, int&, int&, const std::string&);
+glm::mat4 MoveCamera(GLFWwindow* window);
 
 int main() {
 	/////////////////// GLFW INITIALISATION ////////////////////
@@ -58,8 +75,11 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
-	/////////////////// KEY CALLBACK //////////////////////
+	/////////////////// KEY / MOUSE CALLBACK //////////////////////
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	/////////////////// SHADER LOADING ////////////////////
 	Shader shader("./src/MatrixVertexShader3D.vertexshader", "./src/MatrixFragmentShader3D.fragmentshader");
@@ -138,10 +158,7 @@ int main() {
 
 	// VBO, VAO and EBO creation
 	GLuint VBO; //pointer to the VBO --- VBO = Vertex Buffer Object
-	GLuint EBO; //pointer to the EBO --- EBO = Element Buffer Object
 	GLuint VAO; //pointer to the VAO --- VAO = Vertice Array Object
-
-				/////////////////// NEW SETUP (3D) ////////////////////
 
 	/////////////////// VBO SETUP ////////////////////
 	glGenBuffers(1, &VBO); // We generate a buffer to store the VBO
@@ -157,33 +174,6 @@ int main() {
 
 	glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * sizeof(float), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
-
-				/////////////////// OLD SETUP (2D) ////////////////////
-	/*
-	/////////////////// VBO SETUP ////////////////////
-	glGenBuffers(1, &VBO); // We generate a buffer to store the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); //We bind the VBO to it's buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //We allocate enough memory to hold all our vertices
-	//We now have the VBO allocated in memory, binded with it's buffer and filled with the necessary information
-
-	/////////////////// EBO SETUP ////////////////////
-	glGenBuffers(1, &EBO); // We generate a buffer to store the EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); //We bind the VBO to it's buffer, in this case an element array one
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(triangles), triangles, GL_STATIC_DRAW); //We allocate enough memory to hold all the elements that we will draw
-
-	/////////////////// VAO SETUP ////////////////////
-	glGenVertexArrays(1, &VAO);//We create a vertex array buffer that will store the VAO properties
-	glBindVertexArray(VAO); // We bind that VAO to our pointer
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * sizeof(float), (GLvoid*)0);//Here we store enough memory for a vao that will work with 3 dimensional vertices
-	glEnableVertexAttribArray(0);//We bind that layout to the shader
-	
-	glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * sizeof(float), (GLvoid*)(3 * sizeof(GLfloat)));//Storage for the color coordinates
-	glEnableVertexAttribArray(1);//We bind that layout to the shader
-	
-	glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * sizeof(float), (GLvoid*)(6 * sizeof(GLfloat)));//Storage for the texture normals
-	glEnableVertexAttribArray(2);//We bind that layout to the shader
-	*/
 
 	/////////////////// BINDINGS RESET ////////////////////
 	
@@ -215,13 +205,11 @@ int main() {
 
 	/////////////////// VIEW MATRIX ////////////////////
 	//The "look at" matrix used for the camera
-	//Camera variables
-	glm::vec3 cameraPosition(0.f, 0.f,-30.f);
-	glm::vec3 center(0.f, 0.f, 0.f);
-	glm::vec3 upWorld(0.f, 1.f, 0.f);
+
+
 	//Actual look at matrix
-	glm::mat4 viewMat = glm::lookAt(cameraPosition, center, upWorld);
-	
+
+
 	/////////////////// GET THE UNIFORM VARIABLES ////////////////////
 	//Now we get the transformation matrix handle from the vertex shader
 	//GLint offset = glGetUniformLocation(shader.Program, "offset"); // We save the direction of the variable offset to a pointer
@@ -229,20 +217,20 @@ int main() {
 	GLuint projMatrixID = glGetUniformLocation(shader.Program, "projectionMat"); // Perspective / Ortho camera
 	GLuint viewMatrixID = glGetUniformLocation(shader.Program, "viewMat"); // The "camera" matrix
 	GLuint modelMatrixID = glGetUniformLocation(shader.Program, "modelMat"); // IMPORTANT -> model = transformation
-
+	float lastFrame = (float)glfwGetTime();
 	//DRAW LOOP
 	while (!glfwWindowShouldClose(window)) {
+		deltaTime = (float)glfwGetTime() - lastFrame;
+		lastFrame = (float)glfwGetTime();
 
 		/////////////////// CLEAR THE COLOR BUFFER AND SET BACKGROUND COLOR ////////////////////
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glClearColor(0.0f, 0.2f, 0.0f, 1.0f);
+		glClearColor(217.f / 255.f, 233.f / 255.f, 1.f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
-
-
 
 		/////////////////// UNIFORM VARIABLES TWEAKING ////////////////////
 		/*
@@ -250,11 +238,8 @@ int main() {
 		GLint texClamp = glGetUniformLocation(shader.Program, "textureClamp");
 		glUniform1f(texClamp, (sin(glfwGetTime()) + 1) / 2);
 
-
-
-		/////////////////// BIND VAO AND EVO ////////////////////
+		/////////////////// BIND VAO ////////////////////
 		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // WE define the EBO we're using
 
 		/////////////////// TEXTURE USAGE ////////////////////
 		//We bind the first texture to the uniform variable "Texture1" in the fragment shader
@@ -266,16 +251,15 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, T2);
 		glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);
+		/////////////////// PROJECTION MARIX (CAMERA) ////////////////////
+
+		//Prespective Camera (FOV)
+		float AspectRatio = WIDTH / HEIGHT;
+		glm::mat4 perspProj = glm::perspective(radians(cam.GetFOV()), AspectRatio, 0.1f, 100.f);
+
+		/////////////////// VIEW MATRIX ////////////////////
+		cam.DoMovement(window, deltaTime);
 		for (int i = 0; i < 10; i++) {
-			/////////////////// PROJECTION MARIX (CAMERA) ////////////////////
-			//Orthografic Camera ("cubic" frustrum)
-			//glm::mat4 orthoProj = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
-
-			//Prespective Camera (FOV)
-			float AspectRatio = WIDTH / HEIGHT;
-			float FOV = 60.f;
-			glm::mat4 perspProj = glm::perspective(radians(FOV), AspectRatio, 0.1f, 100.f);
-
 			///////////////////  TRANSFORMATION MATRIX ////////////////////
 			//We recalculate the movement with the new values
 			transformationMatrix = glm::mat4(1.0f);
@@ -287,22 +271,11 @@ int main() {
 			transformationMatrix = glm::scale(transformationMatrix, scaleVec);
 			//We comunicate with glsl to overwrite the matrix it has
 			glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
-			glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(viewMat));
+			glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE,glm::value_ptr(cam.LookAt()));
 			glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
 			rotation = (sin(glfwGetTime()) * 2 * PI);
 
-			/////////////////// WIREFRAME / FILL & PAINT //////////////////// 
-			/*
-			if (!WIREFRAME) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			}
-			else {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			}
-			glBindVertexArray(0); // Reset VAO
-			*/
+			/////////////////// PAINT //////////////////// 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
@@ -315,7 +288,6 @@ int main() {
 	// Free the VAO, VBO and EBO
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 
 	// Terminate GLFW, clearing any resources allocated by GLFW.
 	glfwDestroyWindow(window);
@@ -328,10 +300,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-
-	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		WIREFRAME = !WIREFRAME;	
+}
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	if (frameOne) {
+		lastMouseX = xpos;
+		lastMouseY = ypos;
+		frameOne = false;
 	}
+	else {
+		cam.MouseMove(xpos - lastMouseX, ypos - lastMouseY, deltaTime);
+		lastMouseX = xpos;
+		lastMouseY = ypos;
+	}
+
+}
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	cam.MouseScroll(yoffset);
 }
 void LoadTexture(GLuint& pointer, int& width, int& height, const std::string& path) {
 	glGenTextures(1, &pointer); // We generate the actual texture
@@ -349,9 +333,9 @@ void LoadTexture(GLuint& pointer, int& width, int& height, const std::string& pa
 }
 void CreateModelMatrix(glm::vec3 position, glm::vec3 rotationAxis, float rotation, glm::vec3 scale) {
 	//We recalculate the movement with the new values
-	glm::mat4 transformationMatrix;
-	transformationMatrix = glm::mat4(1.0f);
-	transformationMatrix = glm::translate(transformationMatrix, position);
-	transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationAxis);
-	transformationMatrix = glm::scale(transformationMatrix, scale);
+	glm::mat4 newMatrix;
+	newMatrix = glm::mat4(1.0f);
+	newMatrix = glm::translate(newMatrix, position);
+	newMatrix = glm::rotate(newMatrix, rotation, rotationAxis);
+	newMatrix = glm::scale(newMatrix, scale);
 }
