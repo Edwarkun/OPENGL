@@ -1,11 +1,11 @@
 ﻿  main.cpp
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(242): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(279): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(309): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(310): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(314): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(315): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(316): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(321): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(245): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(282): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(313): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(314): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(318): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(319): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(320): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(325): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Proyecto.vcxproj -> C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\Practica1.exe
   Proyecto.vcxproj -> C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\Practica1.pdb (Full PDB)

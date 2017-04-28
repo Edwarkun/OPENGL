@@ -13,6 +13,8 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
+#include "Model.h"
+
 #define PI 3.1416f
 
 using namespace std;
@@ -218,6 +220,7 @@ int main() {
 	GLuint modelMatrixID = glGetUniformLocation(shader.Program, "modelMat"); // IMPORTANT -> model = transformation
 	float lastFrame = (float)glfwGetTime();
 	//DRAW LOOP
+	Model spider("C:\\Users\\earnau\\Downloads\\spider");
 	while (!glfwWindowShouldClose(window)) {
 		deltaTime = (float)glfwGetTime() - lastFrame;
 		lastFrame = (float)glfwGetTime();
@@ -282,6 +285,7 @@ int main() {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+		spider.Draw(shader, GL_FILL);
 		/////////////////// INPUT PROCESSING ////////////////////
 		glfwPollEvents();
 		/////////////////// SWAP SCREEN BUFFERS /////////////////////
