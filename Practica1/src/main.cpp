@@ -37,7 +37,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void LoadTexture(GLuint&, int&, int&, const std::string&);
-glm::mat4 MoveCamera(GLFWwindow* window);
 
 int main() {
 	/////////////////// GLFW INITIALISATION ////////////////////
@@ -77,7 +76,7 @@ int main() {
 
 	/////////////////// KEY / MOUSE CALLBACK //////////////////////
 	glfwSetKeyCallback(window, key_callback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
@@ -226,6 +225,10 @@ int main() {
 		/////////////////// CLEAR THE COLOR BUFFER AND SET BACKGROUND COLOR ////////////////////
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		/*glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		glFrontFace(GL_CW);*/
+
 		glClearColor(217.f / 255.f, 233.f / 255.f, 1.f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 
@@ -264,7 +267,7 @@ int main() {
 			//We recalculate the movement with the new values
 			transformationMatrix = glm::mat4(1.0f);
 			rotationVec = glm::vec3(0.0f, 1.0f, 0.0f);
-			transformationMatrix = glm::rotate(transformationMatrix, (float)glfwGetTime() * 2, rotationVec);
+			//transformationMatrix = glm::rotate(transformationMatrix, (float)glfwGetTime() * 2, rotationVec);
 			transformationMatrix = glm::translate(transformationMatrix, CubesPositionBuffer[i]);
 			rotationVec = glm::vec3(1.0f, 0.0f, 0.0f);
 			transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
