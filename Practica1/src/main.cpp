@@ -83,7 +83,8 @@ int main() {
 	glfwSetScrollCallback(window, scroll_callback);
 
 	/////////////////// SHADER LOADING ////////////////////
-	Shader shader("./src/MatrixVertexShader3D.vertexshader", "./src/MatrixFragmentShader3D.fragmentshader");
+	//Cubes shader
+	Shader shader("./src/ObjectVertexShader.vertexshader", "./src/ObjectFragmentShader.fragmentshader");
 	//3D cubes info
 	GLfloat VertexBufferCube[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -215,12 +216,15 @@ int main() {
 	//Now we get the transformation matrix handle from the vertex shader
 	//GLint offset = glGetUniformLocation(shader.Program, "offset"); // We save the direction of the variable offset to a pointer
 	//GLuint matrixID = glGetUniformLocation(shader.Program, "matrix");
-	GLuint projMatrixID = glGetUniformLocation(shader.Program, "projectionMat"); // Perspective / Ortho camera
-	GLuint viewMatrixID = glGetUniformLocation(shader.Program, "viewMat"); // The "camera" matrix
-	GLuint modelMatrixID = glGetUniformLocation(shader.Program, "modelMat"); // IMPORTANT -> model = transformation
+	
+	GLuint projMatrixID = glGetUniformLocation(shader.Program, "projection"); // Perspective / Ortho camera
+	GLuint viewMatrixID = glGetUniformLocation(shader.Program, "view"); // The "camera" matrix
+	GLuint modelMatrixID = glGetUniformLocation(shader.Program, "model"); // IMPORTANT -> model = transformation
+	
 	float lastFrame = (float)glfwGetTime();
 	//DRAW LOOP
-	Model spider("C:\\Users\\earnau\\Downloads\\spider");
+	Model spider("C:/Users/Usuario/Documents/spider/spider.obj");
+
 	while (!glfwWindowShouldClose(window)) {
 		deltaTime = (float)glfwGetTime() - lastFrame;
 		lastFrame = (float)glfwGetTime();
@@ -230,7 +234,7 @@ int main() {
 
 		/*glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
-		glFrontFace(GL_CW);*/
+		glFrontFace(GL_CCW);*/
 
 		glClearColor(217.f / 255.f, 233.f / 255.f, 1.f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
@@ -238,25 +242,19 @@ int main() {
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
 
-		/////////////////// UNIFORM VARIABLES TWEAKING ////////////////////
-		/*
-		glUniform1f(offset, abs(sin(glfwGetTime()) * 0.2f));*/
-		GLint texClamp = glGetUniformLocation(shader.Program, "textureClamp");
-		glUniform1f(texClamp, (sin(glfwGetTime()) + 1) / 2);
-
 		/////////////////// BIND VAO ////////////////////
 		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO
 
 		/////////////////// TEXTURE USAGE ////////////////////
 		//We bind the first texture to the uniform variable "Texture1" in the fragment shader
-		glActiveTexture(GL_TEXTURE0);
+		/*glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, T1);
 		glUniform1i(glGetUniformLocation(shader.Program, "Texture1"), 0);
 
 		//We do the same as before but using another buffer and the second texture
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, T2);
-		glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);
+		glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);*/
 		/////////////////// PROJECTION MARIX (CAMERA) ////////////////////
 
 		//Prespective Camera (FOV)
@@ -265,7 +263,7 @@ int main() {
 
 		/////////////////// VIEW MATRIX ////////////////////
 		cam.DoMovement(window, deltaTime);
-		for (int i = 0; i < 10; i++) {
+		/*for (int i = 0; i < 10; i++) {
 			///////////////////  TRANSFORMATION MATRIX ////////////////////
 			//We recalculate the movement with the new values
 			transformationMatrix = glm::mat4(1.0f);
@@ -284,7 +282,14 @@ int main() {
 			/////////////////// PAINT //////////////////// 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		}*/
+		transformationMatrix = glm::mat4(1.0f);
+		transformationMatrix = glm::scale(transformationMatrix, glm::vec3(0.1f, -0.1f, 0.1f));
+
+		glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
+		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(cam.LookAt()));
+		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+
 		spider.Draw(shader, GL_FILL);
 		/////////////////// INPUT PROCESSING ////////////////////
 		glfwPollEvents();
