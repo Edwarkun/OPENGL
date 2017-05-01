@@ -14,6 +14,7 @@
 #include <gtc/type_ptr.hpp>
 
 #include "Model.h"
+#include "Object.h"
 
 #define PI 3.1416f
 
@@ -33,6 +34,11 @@ glm::vec3 cameraPosition;
 glm::vec3 cameraFront;
 glm::vec3 cameraRight;
 glm::vec3 cameraUp;
+
+Object* obj;
+glm::vec3 boxColor(0.1f, 0.1f, 5.f);
+glm::vec3 lightColor(1.f);
+glm::vec3 lightPosition(0.f, 40.f, 0.f);
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -84,146 +90,23 @@ int main() {
 
 	/////////////////// SHADER LOADING ////////////////////
 	//Cubes shader
-	Shader shader("./src/ObjectVertexShader.vertexshader", "./src/ObjectFragmentShader.fragmentshader");
-	//3D cubes info
-	GLfloat VertexBufferCube[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		0.5f , -0.5f, -0.5f,  1.0f, 0.0f,
-		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f , -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f ,  0.5f,  0.5f,  1.0f, 1.0f,
-		0.5f ,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f , -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f , -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f , -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f , -0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f , -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f , -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f ,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f ,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
-
-	vec3 CubesPositionBuffer[] = {
-		vec3(0.0f ,  0.0f,  0.0f),
-		vec3(2.0f ,  5.0f, -15.0f),
-		vec3(-1.5f, -2.2f, -2.5f),
-		vec3(-3.8f, -2.0f, -12.3f),
-		vec3(2.4f , -0.4f, -3.5f),
-		vec3(-1.7f,  3.0f, -7.5f),
-		vec3(1.3f , -2.0f, -2.5f),
-		vec3(1.5f ,  2.0f, -2.5f),
-		vec3(1.5f ,  0.2f, -1.5f),
-		vec3(-1.3f,  1.0f, -1.5f)
-	};
-	//Vertices Definition
-	//Here we initialize the points that will form our shape
-	GLfloat vertices[] = {
-		// Positions          // Colors           // Texture Coords
-		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Top Right
-		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Bottom Right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Bottom Left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f  // Top Left 
-	};
-	//EBO definition
-	//Here we define which point form a triangle
-	int triangles[]{
-		0, 3, 1,
-		2, 1, 3
-	};
-
-	// VBO, VAO and EBO creation
-	GLuint VBO; //pointer to the VBO --- VBO = Vertex Buffer Object
-	GLuint VAO; //pointer to the VAO --- VAO = Vertice Array Object
-
-	/////////////////// VBO SETUP ////////////////////
-	glGenBuffers(1, &VBO); // We generate a buffer to store the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); //We bind the VBO to it's buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexBufferCube), VertexBufferCube, GL_STATIC_DRAW);
-
-	/////////////////// VAO SETUP ////////////////////	
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO); 
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * sizeof(float), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * sizeof(float), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-
-	/////////////////// BINDINGS RESET ////////////////////
-	
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	/////////////////// TEXTURE LOADING ////////////////////
-	//Texture 1
-	GLuint T1;
-	int T1W, T1H; // We will store the texture width and height in those variables
-	LoadTexture(T1, T1W, T1H, "./src/texture.png");
-
-	//Texture 1
-	GLuint T2;
-	int T2W, T2H; // We will store the texture width and height in those variables
-	LoadTexture(T2, T2W, T2H, "./src/planetTexture.png");
-
-	/////////////////// TRANSFORMATION / MODEL  MATRIX ////////////////////
-	vec3 positionVec(0.f, -0.5f, 0.f); // New position
-	vec3 scaleVec(1.f, 1.f, 1.0f); // New scale
-	vec3 rotationVec(1.0f, 0.0f, 0.0f); // plane used to rotate the figure
-	float rotation = 0.0f;
-
-	mat4 transformationMatrix(1.0f);
-	//Translate -> Rotate -> Scale
-	transformationMatrix = glm::translate(transformationMatrix, positionVec);
-	transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
-	transformationMatrix = glm::scale(transformationMatrix, scaleVec);
-
-	/////////////////// VIEW MATRIX ////////////////////
-	//The "look at" matrix used for the camera
-
-
-	//Actual look at matrix
-
+	Shader shader("./src/PhongVertexShader.vertexshader", "./src/PhongFragmentShader.fragmentshader");
 
 	/////////////////// GET THE UNIFORM VARIABLES ////////////////////
-	//Now we get the transformation matrix handle from the vertex shader
-	//GLint offset = glGetUniformLocation(shader.Program, "offset"); // We save the direction of the variable offset to a pointer
-	//GLuint matrixID = glGetUniformLocation(shader.Program, "matrix");
-	
+
 	GLuint projMatrixID = glGetUniformLocation(shader.Program, "projection"); // Perspective / Ortho camera
 	GLuint viewMatrixID = glGetUniformLocation(shader.Program, "view"); // The "camera" matrix
 	GLuint modelMatrixID = glGetUniformLocation(shader.Program, "model"); // IMPORTANT -> model = transformation
-	
+	//Light uniforms
+	GLuint cubeColorID = glGetUniformLocation(shader.Program, "cubeColor");
+	GLuint lightColorID = glGetUniformLocation(shader.Program, "lightColor");
+	GLuint lightPositionID = glGetUniformLocation(shader.Program, "lightPosition");
+	GLuint cameraPositionID = glGetUniformLocation(shader.Program, "cameraPosition");
+
 	float lastFrame = (float)glfwGetTime();
 	//DRAW LOOP
-	Model spider("C:/Users/Usuario/Documents/spider/spider.obj");
+	Model spider("./models/spider/spider.obj");
+	obj = new Object(glm::vec3(0.f, 3.f, -8.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
 
 	while (!glfwWindowShouldClose(window)) {
 		deltaTime = (float)glfwGetTime() - lastFrame;
@@ -232,9 +115,9 @@ int main() {
 		/////////////////// CLEAR THE COLOR BUFFER AND SET BACKGROUND COLOR ////////////////////
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/*glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
-		glFrontFace(GL_CCW);*/
+		glFrontFace(GL_CCW);
 
 		glClearColor(217.f / 255.f, 233.f / 255.f, 1.f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
@@ -242,64 +125,28 @@ int main() {
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
 
-		/////////////////// BIND VAO ////////////////////
-		glBindVertexArray(VAO); // We are using the vao attributes here, we "paint" the VAO
-
-		/////////////////// TEXTURE USAGE ////////////////////
-		//We bind the first texture to the uniform variable "Texture1" in the fragment shader
-		/*glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, T1);
-		glUniform1i(glGetUniformLocation(shader.Program, "Texture1"), 0);
-
-		//We do the same as before but using another buffer and the second texture
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, T2);
-		glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);*/
-		/////////////////// PROJECTION MARIX (CAMERA) ////////////////////
-
-		//Prespective Camera (FOV)
+								//Prespective Camera (FOV)
 		float AspectRatio = WIDTH / HEIGHT;
 		glm::mat4 perspProj = glm::perspective(radians(cam.GetFOV()), AspectRatio, 0.1f, 100.f);
 
 		/////////////////// VIEW MATRIX ////////////////////
 		cam.DoMovement(window, deltaTime);
-		/*for (int i = 0; i < 10; i++) {
-			///////////////////  TRANSFORMATION MATRIX ////////////////////
-			//We recalculate the movement with the new values
-			transformationMatrix = glm::mat4(1.0f);
-			rotationVec = glm::vec3(0.0f, 1.0f, 0.0f);
-			//transformationMatrix = glm::rotate(transformationMatrix, (float)glfwGetTime() * 2, rotationVec);
-			transformationMatrix = glm::translate(transformationMatrix, CubesPositionBuffer[i]);
-			rotationVec = glm::vec3(1.0f, 0.0f, 0.0f);
-			transformationMatrix = glm::rotate(transformationMatrix, rotation, rotationVec);
-			transformationMatrix = glm::scale(transformationMatrix, scaleVec);
-			//We comunicate with glsl to overwrite the matrix it has
-			glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
-			glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE,glm::value_ptr(cam.LookAt()));
-			glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
-			rotation = (sin(glfwGetTime()) * 2 * PI);
-
-			/////////////////// PAINT //////////////////// 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}*/
-		transformationMatrix = glm::mat4(1.0f);
-		transformationMatrix = glm::scale(transformationMatrix, glm::vec3(0.1f, -0.1f, 0.1f));
 
 		glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
 		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(cam.LookAt()));
-		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(obj->GetModelMatrix()));
 
-		spider.Draw(shader, GL_FILL);
+		glUniform3f(cubeColorID, boxColor.x, boxColor.y, boxColor.z);
+		glUniform3f(lightColorID, lightColor.x, lightColor.y, lightColor.z);
+		glUniform3f(lightPositionID, lightPosition.x, lightPosition.y, lightPosition.z);
+		glUniform3f(cameraPositionID, cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+		//spider.Draw(shader, GL_FILL);
+		obj->Draw();
 		/////////////////// INPUT PROCESSING ////////////////////
 		glfwPollEvents();
 		/////////////////// SWAP SCREEN BUFFERS /////////////////////
 		glfwSwapBuffers(window);
 	}
-
-	// Free the VAO, VBO and EBO
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
 
 	// Terminate GLFW, clearing any resources allocated by GLFW.
 	glfwDestroyWindow(window);
@@ -332,7 +179,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 void LoadTexture(GLuint& pointer, int& width, int& height, const std::string& path) {
 	glGenTextures(1, &pointer); // We generate the actual texture
 	glBindTexture(GL_TEXTURE_2D, pointer); // WE bind it to the graphics card
-	// Set the texture wrapping/filtering
+										   // Set the texture wrapping/filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

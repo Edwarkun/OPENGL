@@ -68,3 +68,6 @@ glm::mat4 Camera::LookAt() {
 GLfloat Camera::GetFOV() {
 	return FOV;
 }
+glm::vec3 Camera::GetPosition() {
+	return cameraPos;
+}

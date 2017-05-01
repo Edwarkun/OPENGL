@@ -15,6 +15,7 @@ public:
 	void MouseScroll(float offset);
 	glm::mat4 LookAt();
 	float GetFOV();
+	glm::vec3 GetPosition();
 private:
 	glm::vec3 cameraPos;
 	glm::vec3 cameraFront;
