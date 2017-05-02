@@ -1,0 +1,26 @@
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 textureNormals_modelspace;
+
+
+out vec3 vertices;
+out vec2 TexCoord;
+
+uniform float offset;
+//Tranformation matrix
+
+uniform mat4 projectionMat;
+uniform mat4 viewMat;
+uniform mat4 modelMat;
+
+void main(){	
+	//Use the transformation matrix here
+    gl_Position = projectionMat * viewMat * modelMat * vec4(vertexPosition_modelspace, 1);
+
+	//Set the out variables
+	vertices = vertexPosition_modelspace;
+	TexCoord = textureNormals_modelspace;
+}
+

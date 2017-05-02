@@ -1,0 +1,44 @@
+#version 330 core
+
+// Ouput data
+in vec3 normal;
+in vec3 fragmentPosition;
+out vec4 color;
+
+uniform vec3 cubeColor;
+uniform vec3 lightColor;
+uniform vec3 lightPosition;
+uniform vec3 cameraPosition;
+
+void main(){
+	//Normalized vectors
+	vec3 normalizedNormal = normalize(normal);
+	vec3 lightDirection = normalize(lightPosition - fragmentPosition); 
+
+	//ambientLight
+	float ambientFactor= 0.05f;
+	vec3 ambient = ambientFactor * lightColor;
+
+	//Diffuse light
+	float diffuseColor = max(dot(normalizedNormal, lightDirection), 0.0);
+	vec3 diffuse = diffuseColor * lightColor; //White light
+
+	//Specular Light
+	float specularFactor = 1.f;
+	vec3 viewDirection = normalize(cameraPosition - fragmentPosition);
+	vec3 reflectDirection = reflect(-lightDirection, normalizedNormal);  
+	float specularLight = pow(max(dot(viewDirection, reflectDirection), 0.0), 64);
+	vec3 specular = specularFactor * specularLight * lightColor;  
+
+	//Atenuation
+	float distance = length(lightPosition - fragmentPosition);
+	float attenuation = 1/( 1.f + 0.09 * distance + 0.032 * distance * distance);
+
+
+	//Final lightning + ambient light
+	vec3 finalLight = attenuation * (ambient + diffuse + specular) * cubeColor;
+
+
+
+    color = vec4(finalLight, 1.f);
+}

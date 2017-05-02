@@ -1,9 +1,9 @@
 ﻿  main.cpp
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(189): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(190): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(194): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(195): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(196): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(201): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Proyecto.vcxproj -> C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\Practica1.exe
-  Proyecto.vcxproj -> C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\Practica1.pdb (Full PDB)
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(213): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(214): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(218): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(219): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(220): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(225): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.exe
+  Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.pdb (Full PDB)

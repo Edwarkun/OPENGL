@@ -36,9 +36,10 @@ glm::vec3 cameraRight;
 glm::vec3 cameraUp;
 
 Object* obj;
+Object* lightCube;
 glm::vec3 boxColor(0.1f, 0.1f, 5.f);
 glm::vec3 lightColor(1.f);
-glm::vec3 lightPosition(0.f, 4.f, 0.f);
+glm::vec3 lightPosition(0.f, 0.f, 0.f);
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -90,8 +91,9 @@ int main() {
 
 	/////////////////// SHADER LOADING ////////////////////
 	//Cubes shader
-	Shader shader("./src/PhongVertexShader.vertexshader", "./src/PhongFragmentShader.fragmentshader");
-
+	//Shader shader("./src/Shaders/SpotLightVertexShader.vertexshader", "./src/Shaders/SpotLightFragmentShader.fragmentshader");
+	Shader shader("./src/Shaders/FocusLightVertexShader.vertexshader", "./src/Shaders/FocusLightFragmentShader.fragmentshader");
+	Shader unlitShader("./src/Shaders/UnlitVertexShader.vertexshader", "./src/Shaders/UnlitFragmentShader.fragmentshader");
 	/////////////////// GET THE UNIFORM VARIABLES ////////////////////
 
 	GLuint projMatrixID = glGetUniformLocation(shader.Program, "projection"); // Perspective / Ortho camera
@@ -101,12 +103,21 @@ int main() {
 	GLuint cubeColorID = glGetUniformLocation(shader.Program, "cubeColor");
 	GLuint lightColorID = glGetUniformLocation(shader.Program, "lightColor");
 	GLuint lightPositionID = glGetUniformLocation(shader.Program, "lightPosition");
+	GLuint directionID = glGetUniformLocation(shader.Program, "direction");
+	GLuint outerConeID = glGetUniformLocation(shader.Program, "outerCone");
+	GLuint innerConeID = glGetUniformLocation(shader.Program, "innerCone");
 	GLuint cameraPositionID = glGetUniformLocation(shader.Program, "cameraPosition");
+
+	GLuint unlitColorID = glGetUniformLocation(unlitShader.Program, "faceColor");
+	GLuint unlitProjMatrixID = glGetUniformLocation(unlitShader.Program, "projection"); // Perspective / Ortho camera
+	GLuint unlitViewMatrixID = glGetUniformLocation(unlitShader.Program, "view"); // The "camera" matrix
+	GLuint unlitModelMatrixID = glGetUniformLocation(unlitShader.Program, "model"); // IMPORTANT -> model = transformation
 
 	float lastFrame = (float)glfwGetTime();
 	//DRAW LOOP
 	Model spider("./models/spider/spider.obj");
-	obj = new Object(glm::vec3(0.f, 3.f, -8.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
+	obj = new Object(glm::vec3(0.f, 0.f, -8.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
+	lightCube = new Object(lightPosition, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
 
 	while (!glfwWindowShouldClose(window)) {
 		deltaTime = (float)glfwGetTime() - lastFrame;
@@ -125,7 +136,7 @@ int main() {
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
 
-								//Prespective Camera (FOV)
+		//Prespective Camera (FOV)
 		float AspectRatio = WIDTH / HEIGHT;
 		glm::mat4 perspProj = glm::perspective(radians(cam.GetFOV()), AspectRatio, 0.1f, 100.f);
 
@@ -140,8 +151,19 @@ int main() {
 		glUniform3f(lightColorID, lightColor.x, lightColor.y, lightColor.z);
 		glUniform3f(lightPositionID, lightPosition.x, lightPosition.y, lightPosition.z);
 		glUniform3f(cameraPositionID, cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
+		glUniform3f(directionID, 0.f, 0.f, 1.f);
+		glUniform1f(innerConeID, glm::radians(60.f));
+		glUniform1f(outerConeID, glm::radians(90.f));
 		//spider.Draw(shader, GL_FILL);
 		obj->Draw();
+
+		unlitShader.USE();
+		glUniformMatrix4fv(unlitProjMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
+		glUniformMatrix4fv(unlitViewMatrixID, 1, GL_FALSE, glm::value_ptr(cam.LookAt()));
+		glUniformMatrix4fv(unlitModelMatrixID, 1, GL_FALSE, glm::value_ptr(lightCube->GetModelMatrix()));
+
+		glUniform3f(unlitColorID, lightColor.x, lightColor.y, lightColor.z);
+		lightCube->Draw();
 		/////////////////// INPUT PROCESSING ////////////////////
 		glfwPollEvents();
 		/////////////////// SWAP SCREEN BUFFERS /////////////////////
@@ -172,16 +194,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		obj->Move(obj->GetPosition() - glm::vec3(1.f, 0.f, 0.f));
 	}
 	if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-	obj->Rotate(glm::vec3(1.f, 0.f, 0.f));
+	obj->Rotate(glm::vec3(10.f, 0.f, 0.f));
 	}
 	if (key == GLFW_KEY_8 && action == GLFW_PRESS) {
-	obj->Rotate(glm::vec3(-1.f, 0.f, 0.f));
+	obj->Rotate(glm::vec3(-10.f, 0.f, 0.f));
 	}
 	if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
-	obj->Rotate(glm::vec3(0.f, 0.f, 1.f));
+	obj->Rotate(glm::vec3(0.f, 0.f, 10.f));
 	}
 	if (key == GLFW_KEY_6 && action == GLFW_PRESS) {
-	obj->Rotate(glm::vec3(0.f, 0.f, -1.f));
+	obj->Rotate(glm::vec3(0.f, 0.f, -10.f));
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {

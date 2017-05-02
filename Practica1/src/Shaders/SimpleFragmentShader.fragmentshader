@@ -1,0 +1,13 @@
+#version 330 core
+
+// Ouput data
+out vec3 color;
+in vec3 vertices;
+
+void main()
+{
+
+	// Output color = red 
+	color = vec3(0,1,(vertices.y + 0.2) / 0.4);
+
+}
