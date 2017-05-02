@@ -27,7 +27,7 @@ void main(){
 	float specularFactor = 1.f;
 	vec3 viewDirection = normalize(cameraPosition - fragmentPosition);
 	vec3 reflectDirection = reflect(-lightDirection, normalizedNormal);  
-	float specularLight = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
+	float specularLight = pow(max(dot(viewDirection, reflectDirection), 0.0), 64);
 	vec3 specular = specularFactor * specularLight * lightColor;  
 
 	//Final lightning + ambient light

@@ -90,9 +90,11 @@ void Object::Draw() {
 }
 void Object::Move(vec3 translation) {
 	position = translation;
+	std::cout << position.y << std::endl;
 }
 void Object::Rotate(vec3 rota) {
 	rotation = rota;
+	angle = glm::length(rota);
 }
 void Object::Scale(vec3 scal) {
 	scale = scal;
@@ -101,7 +103,7 @@ void Object::Scale(vec3 scal) {
 mat4 Object::GetModelMatrix() {
 	glm::mat4 modelMatrix;
 	modelMatrix = glm::translate(modelMatrix, position);
-	modelMatrix = glm::rotate(modelMatrix, 1.f, rotation);
+	modelMatrix = glm::rotate(modelMatrix, angle, rotation);
 	modelMatrix = glm::scale(modelMatrix, scale);
 	return modelMatrix;
 

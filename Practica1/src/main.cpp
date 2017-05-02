@@ -38,7 +38,7 @@ glm::vec3 cameraUp;
 Object* obj;
 glm::vec3 boxColor(0.1f, 0.1f, 5.f);
 glm::vec3 lightColor(1.f);
-glm::vec3 lightPosition(0.f, 40.f, 0.f);
+glm::vec3 lightPosition(0.f, 4.f, 0.f);
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -119,7 +119,7 @@ int main() {
 		glCullFace(GL_FRONT);
 		glFrontFace(GL_CCW);
 
-		glClearColor(217.f / 255.f, 233.f / 255.f, 1.f, 1.0f);
+		glClearColor(0.f, 0.f, 0.f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 
 		/////////////////// SHADER USAGE ////////////////////
@@ -158,6 +158,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+		obj->Move(obj->GetPosition() + glm::vec3(0.f, 1.f, 0.f));
+	}
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+		obj->Move(obj->GetPosition() - glm::vec3(0.f, 1.f, 0.f));
+	}
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+		obj->Move(obj->GetPosition() + glm::vec3(1.f, 0.f, 0.f));
+	}
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+		obj->Move(obj->GetPosition() - glm::vec3(1.f, 0.f, 0.f));
+	}
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+	obj->Rotate(glm::vec3(1.f, 0.f, 0.f));
+	}
+	if (key == GLFW_KEY_8 && action == GLFW_PRESS) {
+	obj->Rotate(glm::vec3(-1.f, 0.f, 0.f));
+	}
+	if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
+	obj->Rotate(glm::vec3(0.f, 0.f, 1.f));
+	}
+	if (key == GLFW_KEY_6 && action == GLFW_PRESS) {
+	obj->Rotate(glm::vec3(0.f, 0.f, -1.f));
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
