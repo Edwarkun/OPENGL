@@ -15,6 +15,7 @@
 
 #include "Model.h"
 #include "Object.h"
+#include "material.h"
 
 #define PI 3.1416f
 
@@ -37,6 +38,7 @@ glm::vec3 cameraUp;
 
 Object* obj;
 Object* lightCube;
+Material mat("./Materials/difuso.png", "./Materials/especular.png", 32.f);
 glm::vec3 boxColor(0.1f, 0.1f, 5.f);
 glm::vec3 lightColor(1.f);
 glm::vec3 lightPosition(0.f, 0.f, 0.f);
@@ -119,6 +121,8 @@ int main() {
 	obj = new Object(glm::vec3(0.f, 0.f, -8.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
 	lightCube = new Object(lightPosition, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
 
+	mat.SetShininess(&shader);
+	mat.ActivateTextures();
 	while (!glfwWindowShouldClose(window)) {
 		deltaTime = (float)glfwGetTime() - lastFrame;
 		lastFrame = (float)glfwGetTime();
@@ -130,12 +134,13 @@ int main() {
 		glCullFace(GL_FRONT);
 		glFrontFace(GL_CCW);
 
-		glClearColor(0.f, 0.f, 0.f, 1.0f);
+		glClearColor(0.1f, 0.5f, 0.3f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 
 		/////////////////// SHADER USAGE ////////////////////
 		shader.USE();
 
+		mat.SetMaterial(&shader);
 		//Prespective Camera (FOV)
 		float AspectRatio = WIDTH / HEIGHT;
 		glm::mat4 perspProj = glm::perspective(radians(cam.GetFOV()), AspectRatio, 0.1f, 100.f);
@@ -151,9 +156,9 @@ int main() {
 		glUniform3f(lightColorID, lightColor.x, lightColor.y, lightColor.z);
 		glUniform3f(lightPositionID, lightPosition.x, lightPosition.y, lightPosition.z);
 		glUniform3f(cameraPositionID, cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
-		glUniform3f(directionID, 0.f, 0.f, 1.f);
-		glUniform1f(innerConeID, glm::radians(60.f));
-		glUniform1f(outerConeID, glm::radians(90.f));
+		glUniform3f(directionID, 0.f, 0.f, -1.f);
+		glUniform1f(innerConeID, glm::cos(glm::radians(10.f)));
+		glUniform1f(outerConeID, glm::cos(glm::radians(20.f)));
 		//spider.Draw(shader, GL_FILL);
 		obj->Draw();
 

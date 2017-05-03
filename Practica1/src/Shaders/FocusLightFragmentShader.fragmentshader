@@ -1,17 +1,26 @@
 #version 330 core
 
-// Ouput data
+struct Material {
+    sampler2D diffuse;
+    sampler2D specular;
+    float     shininess;
+}; 
+
+// Input data
 in vec3 normal;
 in vec3 fragmentPosition;
+in vec2 texCoords;
+
 out vec4 color;
 
-uniform vec3 cubeColor;
 uniform vec3 lightColor;
 uniform vec3 lightPosition;
 uniform vec3 direction;
 uniform float outerCone;
 uniform float innerCone;
 uniform vec3 cameraPosition;
+
+uniform Material material;
 
 void main(){
 
@@ -21,7 +30,7 @@ void main(){
 
 	//ambientLight
 	float ambientFactor= 0.05f;
-	vec3 ambient = ambientFactor * lightColor;
+	vec3 ambient = ambientFactor * lightColor * vec3(texture(material.diffuse, texCoords));
 
 	//if theta is bigger taht the radius then we don't calculate lights except the ambient one
 	float theta = dot(lightDirection, normalize(-direction));
@@ -32,21 +41,21 @@ void main(){
 	{       
 		//Diffuse light
 		float diffuseColor = max(dot(normalizedNormal, lightDirection), 0.0);
-		vec3 diffuse = diffuseColor * lightColor; //White light
+		vec3 diffuse = lightAmount * diffuseColor * lightColor * vec3(texture(material.diffuse, texCoords)); //White light
 
 		//Specular Light
 		float specularFactor = 1.f;
 		vec3 viewDirection = normalize(cameraPosition - fragmentPosition);
 		vec3 reflectDirection = reflect(-lightDirection, normalizedNormal);  
 		float specularLight = pow(max(dot(viewDirection, reflectDirection), 0.0), 64);
-		vec3 specular = specularFactor * specularLight * lightColor;  
+		vec3 specular = lightAmount * specularFactor * specularLight * lightColor * vec3(texture(material.specular, texCoords));  
 
 		//Final lightning + ambient light
-		vec3 finalLight = (ambient + diffuse + specular) * cubeColor;
+		vec3 finalLight = ambient + diffuse + specular;
 		color = vec4(finalLight, 1.f);
 	}
 	else {
-		vec3 finalLight = ambient * cubeColor;
+		vec3 finalLight = ambient;
 		color = vec4(finalLight, 1.f);
 	}
  

@@ -3,11 +3,13 @@
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 vertexNormals_modelspace;
+layout(location = 2) in vec2 textureCoordinates_modelspace;
 
 
 out vec3 vertices;
 out vec3 normal;
 out vec3 fragmentPosition;
+out vec2 texCoords;
 
 uniform mat4 projection;
 uniform mat4 view;
@@ -21,6 +23,6 @@ void main(){
 	vertices = vertexPosition_modelspace;
 	normal = mat3(transpose(inverse(model))) * vertexNormals_modelspace;
 	fragmentPosition = vec3(model * vec4(vertexPosition_modelspace, 1.0f));
-
+	texCoords = textureCoordinates_modelspace;
 }
 

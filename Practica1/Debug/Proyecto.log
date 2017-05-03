@@ -1,9 +1,5 @@
-﻿  main.cpp
-c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(213): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(214): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(218): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(219): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(220): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(225): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+﻿  material.cpp
+  Object.cpp
+  Generating Code...
   Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.exe
   Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.pdb (Full PDB)
