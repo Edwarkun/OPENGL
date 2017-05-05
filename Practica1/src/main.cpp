@@ -134,7 +134,7 @@ int main() {
 		glCullFace(GL_FRONT);
 		glFrontFace(GL_CCW);
 
-		glClearColor(0.1f, 0.5f, 0.3f, 1.0f);
+		glClearColor(0.f, 0.f, 0.f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 
 		/////////////////// SHADER USAGE ////////////////////
