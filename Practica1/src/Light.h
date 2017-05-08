@@ -15,7 +15,7 @@ public:
 		POINT = 1,
 		SPOT = 2
 	};
-	Light(vec3 pos, vec3 dir, vec3 ambient, vec3 diffuse, vec3 specular, LType lType, int number, vec3 color);
+	Light(vec3 pos, vec3 dir, float ambient, float diffuse, float specular, LType lType, int number, vec3 color);
 	~Light();
 	void SetAtt(float constant, float lineal, float quadratic);
 	void SetLight(Shader *shad, vec3 CamPos);
@@ -24,13 +24,14 @@ public:
 	void SetAperture(float min, float max);
 	void SetPosition(vec3 pos);
 	vec3 GetColor();
+	vec3 GetPosition();
 
 private:
 	vec3 Ldirection;
 	vec3 Lpos;
-	vec3 Lambient;
-	vec3 Ldiffuse;
-	vec3 Lspecular;
+	float Lambient;
+	float Ldiffuse;
+	float Lspecular;
 	vec3 Lcolor;
 	LType LightType;
 	float MinAperture;

@@ -16,6 +16,7 @@
 #include "Model.h"
 #include "Object.h"
 #include "material.h"
+#include "Light.h"
 
 #define PI 3.1416f
 
@@ -39,9 +40,6 @@ glm::vec3 cameraUp;
 Object* obj;
 Object* lightCube;
 Material mat("./Materials/difuso.png", "./Materials/especular.png", 32.f);
-glm::vec3 boxColor(0.1f, 0.1f, 5.f);
-glm::vec3 lightColor(1.f);
-glm::vec3 lightPosition(0.f, 0.f, 0.f);
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -84,7 +82,6 @@ int main() {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
-
 	/////////////////// KEY / MOUSE CALLBACK //////////////////////
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -96,20 +93,35 @@ int main() {
 	//Shader shader("./src/Shaders/SpotLightVertexShader.vertexshader", "./src/Shaders/SpotLightFragmentShader.fragmentshader");
 	Shader shader("./src/Shaders/FocusLightVertexShader.vertexshader", "./src/Shaders/FocusLightFragmentShader.fragmentshader");
 	Shader unlitShader("./src/Shaders/UnlitVertexShader.vertexshader", "./src/Shaders/UnlitFragmentShader.fragmentshader");
+	Shader lightShader("./src/Shaders/VertexShaderPhongTexture.vertexshader", "./src/Shaders/FragmentShaderPhongTexture.fragmentshader");
+	/////////////////// LIGHTS + VISUAL CUBES////////////////////
+	//Each light has a cube to represent its position and color
+	//Directional light
+	Light directionalLight(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), 0.4f, 1.f, 1.f, Light::DIRECTIONAL, 0, glm::vec3(1.f, 1.f, 1.f)); // White
+
+	//2 point lights
+	Light pointLight1(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), 0.05f, 1.f, 1.f, Light::POINT, 0, glm::vec3(0.f, 1.f, 1.f)); // Cyan
+	Object pointLight1Cube(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
+
+	Light pointLight2(glm::vec3(2.f, 2.f, 2.f), glm::vec3(0.f, 0.f, 0.f), 0.05f, 1.f, 1.f, Light::POINT, 1, glm::vec3(0.f, 1.f, 0.f)); // Green
+	Object pointLight2Cube(glm::vec3(2.f, 2.f, 2.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
+
+	//2 spot lights
+	Light spotLight1(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 1.f), 0.05f, 1.f, 1.f, Light::SPOT, 0, glm::vec3(1.f, 1.f, 1.f)); // White
+	Object spotLight1Cube(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
+
+	Light spotLight2(glm::vec3(2.f, 0.f, 2.f), glm::vec3(1.f, 0.f, 0.f), 0.05f, 1.f, 1.f, Light::SPOT, 1, glm::vec3(1.f, 0.f, 1.f)); // Magenta
+	Object spotLight2Cube(glm::vec3(2.f, 0.f, 2.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
+
+
+
 	/////////////////// GET THE UNIFORM VARIABLES ////////////////////
 
-	GLuint projMatrixID = glGetUniformLocation(shader.Program, "projection"); // Perspective / Ortho camera
-	GLuint viewMatrixID = glGetUniformLocation(shader.Program, "view"); // The "camera" matrix
-	GLuint modelMatrixID = glGetUniformLocation(shader.Program, "model"); // IMPORTANT -> model = transformation
+	GLuint projMatrixID = glGetUniformLocation(lightShader.Program, "projection"); // Perspective / Ortho camera
+	GLuint viewMatrixID = glGetUniformLocation(lightShader.Program, "view"); // The "camera" matrix
+	GLuint modelMatrixID = glGetUniformLocation(lightShader.Program, "model"); // IMPORTANT -> model = transformation
+	
 	//Light uniforms
-	GLuint cubeColorID = glGetUniformLocation(shader.Program, "cubeColor");
-	GLuint lightColorID = glGetUniformLocation(shader.Program, "lightColor");
-	GLuint lightPositionID = glGetUniformLocation(shader.Program, "lightPosition");
-	GLuint directionID = glGetUniformLocation(shader.Program, "direction");
-	GLuint outerConeID = glGetUniformLocation(shader.Program, "outerCone");
-	GLuint innerConeID = glGetUniformLocation(shader.Program, "innerCone");
-	GLuint cameraPositionID = glGetUniformLocation(shader.Program, "cameraPosition");
-
 	GLuint unlitColorID = glGetUniformLocation(unlitShader.Program, "faceColor");
 	GLuint unlitProjMatrixID = glGetUniformLocation(unlitShader.Program, "projection"); // Perspective / Ortho camera
 	GLuint unlitViewMatrixID = glGetUniformLocation(unlitShader.Program, "view"); // The "camera" matrix
@@ -119,9 +131,8 @@ int main() {
 	//DRAW LOOP
 	Model spider("./models/spider/spider.obj");
 	obj = new Object(glm::vec3(0.f, 0.f, -8.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
-	lightCube = new Object(lightPosition, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
 
-	mat.SetShininess(&shader);
+	mat.SetShininess(&lightShader);
 	mat.ActivateTextures();
 	while (!glfwWindowShouldClose(window)) {
 		deltaTime = (float)glfwGetTime() - lastFrame;
@@ -138,9 +149,8 @@ int main() {
 		glEnable(GL_DEPTH_TEST);
 
 		/////////////////// SHADER USAGE ////////////////////
-		shader.USE();
+		lightShader.USE();
 
-		mat.SetMaterial(&shader);
 		//Prespective Camera (FOV)
 		float AspectRatio = WIDTH / HEIGHT;
 		glm::mat4 perspProj = glm::perspective(radians(cam.GetFOV()), AspectRatio, 0.1f, 100.f);
@@ -152,23 +162,39 @@ int main() {
 		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(cam.LookAt()));
 		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(obj->GetModelMatrix()));
 
-		glUniform3f(cubeColorID, boxColor.x, boxColor.y, boxColor.z);
-		glUniform3f(lightColorID, lightColor.x, lightColor.y, lightColor.z);
-		glUniform3f(lightPositionID, lightPosition.x, lightPosition.y, lightPosition.z);
-		glUniform3f(cameraPositionID, cam.GetPosition().x, cam.GetPosition().y, cam.GetPosition().z);
-		glUniform3f(directionID, 0.f, 0.f, -1.f);
-		glUniform1f(innerConeID, glm::cos(glm::radians(10.f)));
-		glUniform1f(outerConeID, glm::cos(glm::radians(20.f)));
 		//spider.Draw(shader, GL_FILL);
+
+		mat.SetMaterial(&lightShader);
+		directionalLight.SetLight(&lightShader, cam.GetPosition());
+
+		spotLight1.SetLight(&lightShader, cam.GetPosition());
+		spotLight2.SetLight(&lightShader, cam.GetPosition());
+
+		pointLight1.SetLight(&lightShader, cam.GetPosition());
+		pointLight2.SetLight(&lightShader, cam.GetPosition());
+
 		obj->Draw();
 
 		unlitShader.USE();
 		glUniformMatrix4fv(unlitProjMatrixID, 1, GL_FALSE, glm::value_ptr(perspProj));
 		glUniformMatrix4fv(unlitViewMatrixID, 1, GL_FALSE, glm::value_ptr(cam.LookAt()));
-		glUniformMatrix4fv(unlitModelMatrixID, 1, GL_FALSE, glm::value_ptr(lightCube->GetModelMatrix()));
 
-		glUniform3f(unlitColorID, lightColor.x, lightColor.y, lightColor.z);
-		lightCube->Draw();
+		glUniformMatrix4fv(unlitModelMatrixID, 1, GL_FALSE, glm::value_ptr(spotLight1Cube.GetModelMatrix()));
+		glUniform3f(unlitColorID, spotLight1.GetColor().x, spotLight1.GetColor().y, spotLight1.GetColor().z);
+		spotLight1Cube.Draw();
+
+		glUniformMatrix4fv(unlitModelMatrixID, 1, GL_FALSE, glm::value_ptr(spotLight2Cube.GetModelMatrix()));
+		glUniform3f(unlitColorID, spotLight2.GetColor().x, spotLight2.GetColor().y, spotLight2.GetColor().z);
+		spotLight2Cube.Draw();
+
+		glUniformMatrix4fv(unlitModelMatrixID, 1, GL_FALSE, glm::value_ptr(pointLight1Cube.GetModelMatrix()));
+		glUniform3f(unlitColorID, pointLight1.GetColor().x, pointLight1.GetColor().y, pointLight1.GetColor().z);
+		pointLight1Cube.Draw();
+
+		glUniformMatrix4fv(unlitModelMatrixID, 1, GL_FALSE, glm::value_ptr(pointLight2Cube.GetModelMatrix()));
+		glUniform3f(unlitColorID, pointLight2.GetColor().x, pointLight2.GetColor().y, pointLight2.GetColor().z);
+		pointLight2Cube.Draw();
+
 		/////////////////// INPUT PROCESSING ////////////////////
 		glfwPollEvents();
 		/////////////////// SWAP SCREEN BUFFERS /////////////////////
@@ -191,6 +217,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
 		obj->Move(obj->GetPosition() - glm::vec3(0.f, 1.f, 0.f));
+	}
+	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+		obj->Move(obj->GetPosition() + glm::vec3(0.f, 0.f, -1.f));
+	}
+	if (key == GLFW_KEY_O && action == GLFW_PRESS) {
+		obj->Move(obj->GetPosition() - glm::vec3(0.f, 0.f, -1.f));
 	}
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
 		obj->Move(obj->GetPosition() + glm::vec3(1.f, 0.f, 0.f));

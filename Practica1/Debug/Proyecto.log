@@ -1,56 +1,9 @@
-﻿  shader.cpp
-  Object.cpp
-  Model.cpp
-  Mesh.cpp
-c:\users\earnau\source\repos\opengl\practica1\src\mesh.cpp(52): warning C4244: 'argument': conversion from 'GLuint' to 'GLfloat', possible loss of data
-  material.cpp
-  main.cpp
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(216): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(217): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(221): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(222): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(223): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\earnau\source\repos\opengl\practica1\src\main.cpp(228): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Camera.cpp
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-Mesh.obj : warning LNK4049: locally defined symbol ___glewActiveTexture imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewBindBuffer imported
-Object.obj : warning LNK4049: locally defined symbol ___glewBindBuffer imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewBufferData imported
-Object.obj : warning LNK4049: locally defined symbol ___glewBufferData imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewGenBuffers imported
-Object.obj : warning LNK4049: locally defined symbol ___glewGenBuffers imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewEnableVertexAttribArray imported
-Object.obj : warning LNK4049: locally defined symbol ___glewEnableVertexAttribArray imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewGetUniformLocation imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewUniform1f imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewVertexAttribPointer imported
-Object.obj : warning LNK4049: locally defined symbol ___glewVertexAttribPointer imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewBindVertexArray imported
-Object.obj : warning LNK4049: locally defined symbol ___glewBindVertexArray imported
-Mesh.obj : warning LNK4049: locally defined symbol ___glewGenVertexArrays imported
-Object.obj : warning LNK4049: locally defined symbol ___glewGenVertexArrays imported
-Model.obj : warning LNK4049: locally defined symbol ___glewGenerateMipmap imported
-Object.obj : warning LNK4049: locally defined symbol ___glewDeleteBuffers imported
-Object.obj : warning LNK4049: locally defined symbol ___glewDeleteVertexArrays imported
-shader.obj : warning LNK4049: locally defined symbol ___glewAttachShader imported
-shader.obj : warning LNK4049: locally defined symbol ___glewCompileShader imported
-shader.obj : warning LNK4049: locally defined symbol ___glewCreateProgram imported
-shader.obj : warning LNK4049: locally defined symbol ___glewCreateShader imported
-shader.obj : warning LNK4049: locally defined symbol ___glewDeleteShader imported
-shader.obj : warning LNK4049: locally defined symbol ___glewGetProgramInfoLog imported
-shader.obj : warning LNK4049: locally defined symbol ___glewGetProgramiv imported
-shader.obj : warning LNK4049: locally defined symbol ___glewGetShaderInfoLog imported
-shader.obj : warning LNK4049: locally defined symbol ___glewGetShaderiv imported
-shader.obj : warning LNK4049: locally defined symbol ___glewLinkProgram imported
-shader.obj : warning LNK4049: locally defined symbol ___glewShaderSource imported
-shader.obj : warning LNK4049: locally defined symbol ___glewUseProgram imported
-libSOIL.lib(image_DXT.obj) : warning LNK4099: PDB 'SOIL.pdb' was not found with 'libSOIL.lib(image_DXT.obj)' or at 'C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\SOIL.pdb'; linking object as if no debug info
-libSOIL.lib(image_helper.obj) : warning LNK4099: PDB 'SOIL.pdb' was not found with 'libSOIL.lib(image_helper.obj)' or at 'C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\SOIL.pdb'; linking object as if no debug info
-libSOIL.lib(SOIL.obj) : warning LNK4099: PDB 'SOIL.pdb' was not found with 'libSOIL.lib(SOIL.obj)' or at 'C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\SOIL.pdb'; linking object as if no debug info
-libSOIL.lib(stb_image_aug.obj) : warning LNK4099: PDB 'SOIL.pdb' was not found with 'libSOIL.lib(stb_image_aug.obj)' or at 'C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\SOIL.pdb'; linking object as if no debug info
-glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'glew32s.lib(glew.obj)' or at 'C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\vc120.pdb'; linking object as if no debug info
-  Proyecto.vcxproj -> C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\Practica1.exe
-  Proyecto.vcxproj -> C:\Users\earnau\Source\Repos\OPENGL\Practica1\Debug\Practica1.pdb (Full PDB)
+﻿  main.cpp
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(248): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(249): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(253): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(254): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(255): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\usuario\source\repos\opengl\practica1\src\main.cpp(260): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.exe
+  Proyecto.vcxproj -> C:\Users\Usuario\Source\Repos\OPENGL\Practica1\Debug\Practica1.pdb (Full PDB)
