@@ -39,7 +39,7 @@ glm::vec3 cameraUp;
 
 Object* obj;
 Object* lightCube;
-Material mat("./Materials/difuso.png", "./Materials/especular.png", 32.f);
+Material mat("./Materials/difuso.png", "./Materials/especular.png", 64.f);
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -107,13 +107,11 @@ int main() {
 	Object pointLight2Cube(glm::vec3(2.f, 2.f, 2.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
 
 	//2 spot lights
-	Light spotLight1(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 1.f), 0.05f, 1.f, 1.f, Light::SPOT, 0, glm::vec3(1.f, 1.f, 1.f)); // White
+	Light spotLight1(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, -1.f), 0.05f, 1.f, 1.f, Light::SPOT, 0, glm::vec3(1.f, 1.f, 1.f)); // White
 	Object spotLight1Cube(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
 
-	Light spotLight2(glm::vec3(2.f, 0.f, 2.f), glm::vec3(1.f, 0.f, 0.f), 0.05f, 1.f, 1.f, Light::SPOT, 1, glm::vec3(1.f, 0.f, 1.f)); // Magenta
+	Light spotLight2(glm::vec3(2.f, 0.f, 2.f), glm::vec3(-1.f, 0.f, 0.f), 0.05f, 1.f, 1.f, Light::SPOT, 1, glm::vec3(1.f, 0.f, 1.f)); // Magenta
 	Object spotLight2Cube(glm::vec3(2.f, 0.f, 2.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f));
-
-
 
 	/////////////////// GET THE UNIFORM VARIABLES ////////////////////
 
@@ -129,7 +127,7 @@ int main() {
 
 	float lastFrame = (float)glfwGetTime();
 	//DRAW LOOP
-	Model spider("./models/spider/spider.obj");
+	//Model spider("./models/spider/spider.obj");
 	obj = new Object(glm::vec3(0.f, 0.f, -8.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
 
 	mat.SetShininess(&lightShader);
@@ -162,10 +160,9 @@ int main() {
 		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr(cam.LookAt()));
 		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(obj->GetModelMatrix()));
 
-		//spider.Draw(shader, GL_FILL);
-
 		mat.SetMaterial(&lightShader);
-		directionalLight.SetLight(&lightShader, cam.GetPosition());
+		mat.SetShininess(&lightShader);
+		//directionalLight.SetLight(&lightShader, cam.GetPosition());
 
 		spotLight1.SetLight(&lightShader, cam.GetPosition());
 		spotLight2.SetLight(&lightShader, cam.GetPosition());
@@ -213,10 +210,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-		obj->Move(obj->GetPosition() + glm::vec3(0.f, 1.f, 0.f));
+		obj->Move(obj->GetPosition() - glm::vec3(0.f, 1.f, 0.f));
 	}
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-		obj->Move(obj->GetPosition() - glm::vec3(0.f, 1.f, 0.f));
+		obj->Move(obj->GetPosition() + glm::vec3(0.f, 1.f, 0.f));
 	}
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		obj->Move(obj->GetPosition() + glm::vec3(0.f, 0.f, -1.f));
@@ -230,17 +227,23 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
 		obj->Move(obj->GetPosition() - glm::vec3(1.f, 0.f, 0.f));
 	}
-	if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
 	obj->Rotate(glm::vec3(10.f, 0.f, 0.f));
 	}
-	if (key == GLFW_KEY_8 && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
 	obj->Rotate(glm::vec3(-10.f, 0.f, 0.f));
 	}
-	if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
 	obj->Rotate(glm::vec3(0.f, 0.f, 10.f));
 	}
-	if (key == GLFW_KEY_6 && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
 	obj->Rotate(glm::vec3(0.f, 0.f, -10.f));
+	}
+	if (key == GLFW_KEY_5 && action == GLFW_PRESS) {
+	obj->Rotate(glm::vec3(0.f, 10.f, 0.f));
+	}
+	if (key == GLFW_KEY_6 && action == GLFW_PRESS) {
+	obj->Rotate(glm::vec3(0.f, -10.f, 0.f));
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
